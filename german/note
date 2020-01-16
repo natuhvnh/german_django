@@ -1,0 +1,76 @@
+1. Create virtual pipenv
+pipenv shell
+pipenv install
+2. Leaving virtual env
+pipenv exit
+3. Create django project
+django-admin startproject <project name>
+4. Setting.py
+- Debug = True (in development mode) => set to False when deploy
+- Allowed_hosts: Fill domain name when deploy
+5. Run server
+python manage.py runserver
+6. Install mysqlclient for django and create mysql database
+- pip3 install mysqlclient
+- <project name>\settings.py: Change database setting
+  DATABASES = {
+      'default': {
+          'ENGINE': 'django.db.backends.mysql',
+          'NAME': 'german_django',
+          'USER': 'root',
+          'PASSWORD': '123456',
+          'HOST': 'localhost',
+          'PORT': ''
+      }
+  }
+7. Migrate to create database
+python manage.py migrate
+8. Create super user to login admin page (http://127.0.0.1:8000/admin)
+python manage.py createsuperuser --username=admin --email=natuhvnh@gmail.com
+9. Create app
+- python manage.py startapp <app name>
+- Add <app name> in <project name>\settings.py => Installed_app
+- Add url in <project name>\urls.py. Eg:
+from django.urls import path, include
+path('posts/', include('post.urls')) # url with /post will direct to url file in post folder
+- Create urls.py in <app name> folder
+- Create view for url in views.py
+10. Create own table
+- Create table in <app name>/models.py
+- Make migration file: python manage.py makemigrations <app name>
+- Create table to sql: python manage.py migrate
+- Add table to admin site: Go to admin.py. Eg:
+from .models import Posts
+admin.site.register(Posts)
+11. Make templates global
+Add 'DIRS': [os.path.join(BASE_DIR, 'templates')] in settings.py/Templates
+12. Authentication: See views
+13. Authentication token
+- Add to settings.py: 'rest_framework.authtoken'
+- Run: python manage.py migrate
+14. CORS 
+- pipenv install django-cors-headers
+- INSTALLED_APPS = [...'corsheaders',...]
+- MIDDLEWARE = [  
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    ...
+]
+- CORS_ORIGIN_ALLOW_ALL=True or 
+CORS_ORIGIN_WHITELIST = [
+    'google.com',
+    'hostname.example.com',
+    'localhost:8000',
+    '127.0.0.1:9000'
+]
+15. Display static file location in folder
+- Setting.py:
+MEDIA_ROOT = os.path.join(BASE_DIR, "storage")
+MEDIA_URL = "/storage/"
+- <project_name>/urls.py
+from django.conf import settings
+from django.conf.urls.static import static
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('Content.urls'))
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
